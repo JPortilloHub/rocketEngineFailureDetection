@@ -32,5 +32,8 @@ S3_ACCESS_KEY = os.environ.get("S3_ACCESS_KEY", "")
 S3_SECRET_KEY = os.environ.get("S3_SECRET_KEY", "")
 S3_BUCKET = os.environ.get("S3_BUCKET", "s3a://prometheux-public-data-bucket")
 
+# Prometheux project
+PROJECT_ID = os.environ.get("PROJECT_ID", "")
+
 # Mock mode: if True, return hardcoded results instead of calling Prometheux API
-USE_MOCK = os.environ.get("USE_MOCK", "true").lower() == "true"
+USE_MOCK = os.environ.get("USE_MOCK_DATA", "true").lower() == "true"

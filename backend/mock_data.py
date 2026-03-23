@@ -106,26 +106,26 @@ HOTSPOTS = [
     {"ComponentId": "LOX_Supply_Line", "Count": 3},
     {"ComponentId": "LOX_Tank", "Count": 3},
     {"ComponentId": "HPOTP", "Count": 3},
-    {"ComponentId": "Main_Combustion_Chamber", "Count": 2},
-    {"ComponentId": "Helium_Control_System", "Count": 2},
+    {"ComponentId": "Main_Combustion_Chamber", "Count": 1},
+    {"ComponentId": "Helium_Control_System", "Count": 1},
     {"ComponentId": "Fuel_Coolant_Valve_A", "Count": 1},
     {"ComponentId": "Vibration_Suppressor_B", "Count": 1},
     {"ComponentId": "Press_Reg_C", "Count": 1},
 ]
 
 ROOT_CAUSES = [
-    {"ComponentId": "HPOTP", "Count": 3},
-    {"ComponentId": "LPOTP_Discharge", "Count": 3},
     {"ComponentId": "LPOTP", "Count": 3},
     {"ComponentId": "LOX_Supply_Line", "Count": 3},
+    {"ComponentId": "HPOTP", "Count": 3},
     {"ComponentId": "LOX_Tank", "Count": 3},
+    {"ComponentId": "LPOTP_Discharge", "Count": 3},
 ]
 
 # Stage 4: Notifications
 NOTIFICATIONS = [
-    {"ComponentId": "HPOTP", "Name": "Laura", "Surname": "Grey", "Team": "MainChainTeam"},
     {"ComponentId": "LPOTP_Discharge", "Name": "Laura", "Surname": "Grey", "Team": "MainChainTeam"},
-    {"ComponentId": "LPOTP", "Name": "Laura", "Surname": "Grey", "Team": "MainChainTeam"},
-    {"ComponentId": "LOX_Supply_Line", "Name": "Laura", "Surname": "Grey", "Team": "MainChainTeam"},
     {"ComponentId": "LOX_Tank", "Name": "Laura", "Surname": "Grey", "Team": "MainChainTeam"},
+    {"ComponentId": "LOX_Supply_Line", "Name": "Laura", "Surname": "Grey", "Team": "MainChainTeam"},
+    {"ComponentId": "HPOTP", "Name": "Laura", "Surname": "Grey", "Team": "MainChainTeam"},
+    {"ComponentId": "LPOTP", "Name": "Laura", "Surname": "Grey", "Team": "MainChainTeam"},
 ]
