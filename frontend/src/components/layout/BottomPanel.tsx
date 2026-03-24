@@ -128,15 +128,16 @@ function OverviewContent() {
   return (
     <div className="text-sm text-text-secondary leading-relaxed space-y-2">
       <p>
-        This Digital Twin models the Space Shuttle Main Engine (SSME) component
-        network and detects failure propagation paths using recursive Vadalog
-        reasoning on the Prometheux platform.
+        This dashboard provides a real-time Digital Twin of the Space Shuttle Main Engine (SSME),
+        connecting data from multiple heterogeneous sources (PostgreSQL, Neo4j, MariaDB, S3) into
+        a unified view of the engine's component network.
       </p>
       <p>
-        Select an analysis stage from the sidebar to explore each phase of the
-        failure detection pipeline. The graph visualizes 25 interconnected
-        components across 5 teams, with 3 active failure chains detected from
-        observable sensors.
+        Use the <span className="text-text-primary font-medium">4 analysis stages</span> on the sidebar to:
+        detect failed sensors, trace how failures propagate through the component hierarchy,
+        identify root cause hotspots where multiple failure chains converge, and see which
+        team leaders are notified. You can also focus on a single failure chain, search for
+        specific components, or use the quick navigation buttons to jump to critical areas.
       </p>
     </div>
   )
