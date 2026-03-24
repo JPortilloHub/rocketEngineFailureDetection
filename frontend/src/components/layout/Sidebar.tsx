@@ -10,6 +10,7 @@ import {
   X,
   Radio,
   Activity,
+  Gauge,
 } from 'lucide-react'
 import type { ReactNode } from 'react'
 import type { Component } from '../../types'
@@ -315,12 +316,15 @@ export function Sidebar({
 
       {/* KPIs section */}
       <div className="p-4 border-t border-border-subtle">
-        <h2
-          className="text-xs font-semibold uppercase tracking-widest text-text-tertiary mb-3"
-          style={{ fontFamily: "'JetBrains Mono', monospace" }}
-        >
-          KPIs
-        </h2>
+        <div className="flex items-center gap-2 mb-3">
+          <Gauge className="w-4 h-4 text-accent-cyan" />
+          <h2
+            className="text-xs font-semibold uppercase tracking-widest text-text-tertiary"
+            style={{ fontFamily: "'JetBrains Mono', monospace" }}
+          >
+            KPIs
+          </h2>
+        </div>
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2.5 px-3 py-2 rounded-md bg-bg-card border border-border-subtle">
             <AlertTriangle className="w-4 h-4 text-status-critical flex-shrink-0" />
