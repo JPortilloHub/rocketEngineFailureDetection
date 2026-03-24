@@ -2,7 +2,6 @@ import logging
 
 from fastapi import APIRouter, HTTPException
 
-from backend.config import USE_MOCK
 from backend.prometheux_client import evaluate_vadalog
 from backend.vadalog.programs import (
     get_degree_centrality_program,
@@ -25,8 +24,6 @@ def _parse_shortest_paths(results: dict) -> list[dict]:
 
 @router.get("/degree-centrality")
 async def get_degree_centrality():
-    if USE_MOCK:
-        return {"data": []}
     try:
         results = await evaluate_vadalog(
             program=get_degree_centrality_program(),
@@ -41,8 +38,6 @@ async def get_degree_centrality():
 
 @router.get("/shortest-paths")
 async def get_shortest_paths():
-    if USE_MOCK:
-        return {"data": []}
     try:
         results = await evaluate_vadalog(
             program=get_shortest_paths_program(),
