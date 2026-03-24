@@ -35,5 +35,8 @@ S3_BUCKET = os.environ.get("S3_BUCKET", "s3a://prometheux-public-data-bucket")
 # Prometheux project
 PROJECT_ID = os.environ.get("PROJECT_ID", "")
 
+# Claude API
+ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
+
 # Mock mode: if True, return hardcoded results instead of calling Prometheux API
 USE_MOCK = os.environ.get("USE_MOCK_DATA", "true").lower() == "true"

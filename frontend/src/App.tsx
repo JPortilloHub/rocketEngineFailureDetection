@@ -6,6 +6,7 @@ import { Header } from './components/layout/Header'
 import { Sidebar } from './components/layout/Sidebar'
 import { BottomPanel } from './components/layout/BottomPanel'
 import { ComponentGraph } from './components/graph/ComponentGraph'
+import { ChatPanel } from './components/chat/ChatPanel'
 import { useDigitalTwin } from './hooks/useDigitalTwin'
 import { useGraphLayout } from './hooks/useGraphLayout'
 
@@ -79,6 +80,20 @@ function App() {
   const handleReactFlowInit = useCallback((instance: ReactFlowInstance) => {
     reactFlowInstance.current = instance
   }, [])
+
+  const handleChatComponentClick = useCallback((componentId: string) => {
+    // Clear sensor focus if the component isn't in the active chain
+    if (selectedSensor && !sensorChainNodeIds.has(componentId)) {
+      setSelectedSensor(null)
+    }
+    setTimeout(() => {
+      reactFlowInstance.current?.fitView({
+        nodes: [{ id: componentId }],
+        padding: 1.5,
+        duration: 500,
+      })
+    }, 100)
+  }, [selectedSensor, sensorChainNodeIds])
 
   if (data.loading) {
     return (
@@ -163,6 +178,11 @@ function App() {
           />
         </div>
       </div>
+
+      <ChatPanel
+        componentIds={data.components.map((c) => c.ComponentID)}
+        onComponentClick={handleChatComponentClick}
+      />
     </div>
   )
 }

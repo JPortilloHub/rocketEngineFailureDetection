@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from backend.routers import digital_twin, analytics, data
+from backend.routers import digital_twin, analytics, data, chat
 
 app = FastAPI(
     title="Prometheux Digital Twin API",
@@ -20,6 +20,7 @@ app.add_middleware(
 app.include_router(data.router)
 app.include_router(digital_twin.router)
 app.include_router(analytics.router)
+app.include_router(chat.router)
 
 
 @app.get("/api/health")
