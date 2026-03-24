@@ -1,16 +1,15 @@
 import { motion } from 'framer-motion'
-import { AlertTriangle, Activity, Bell, Hexagon } from 'lucide-react'
+import { Hexagon, MessageCircle } from 'lucide-react'
 
 interface HeaderProps {
   failureCount: number
   rootCauseCount: number
   notificationCount: number
+  onOpenChat: () => void
 }
 
 export function Header({
-  failureCount,
-  rootCauseCount,
-  notificationCount,
+  onOpenChat,
 }: HeaderProps) {
   return (
     <header className="border-b border-border-subtle bg-bg-secondary px-6 py-3 flex items-center justify-between">
@@ -26,69 +25,31 @@ export function Header({
             className="text-lg font-semibold tracking-tight text-text-primary"
             style={{ fontFamily: "'JetBrains Mono', monospace" }}
           >
-            Prometheux Digital Twin
+            SSME Failure Detection System
           </h1>
           <p className="text-xs text-text-tertiary -mt-0.5">
-            SSME Failure Detection System
+            Powered by Prometheux
           </p>
         </div>
       </motion.div>
 
-      <div className="flex items-center gap-4">
-        <motion.div
-          className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-bg-card border border-border-subtle"
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.1 }}
+      <motion.button
+        onClick={onOpenChat}
+        className="flex items-center gap-2.5 px-4 py-2 rounded-lg bg-accent-blue/10 border border-accent-blue/30 hover:bg-accent-blue/20 hover:border-accent-blue/50 transition-all duration-200 group"
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 0.1 }}
+      >
+        <div className="w-7 h-7 rounded-full bg-accent-blue flex items-center justify-center shadow-sm shadow-accent-blue/25 group-hover:shadow-accent-blue/40 transition-shadow">
+          <MessageCircle className="w-3.5 h-3.5 text-white" />
+        </div>
+        <span
+          className="text-sm text-text-secondary group-hover:text-text-primary transition-colors"
+          style={{ fontFamily: "'JetBrains Mono', monospace" }}
         >
-          <AlertTriangle className="w-4 h-4 text-status-critical" />
-          <span
-            className="text-sm text-text-secondary"
-            style={{ fontFamily: "'JetBrains Mono', monospace" }}
-          >
-            <span className="text-status-critical font-semibold">
-              {failureCount}
-            </span>{' '}
-            Failures
-          </span>
-        </motion.div>
-
-        <motion.div
-          className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-bg-card border border-border-subtle"
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.2 }}
-        >
-          <Activity className="w-4 h-4 text-status-root-cause" />
-          <span
-            className="text-sm text-text-secondary"
-            style={{ fontFamily: "'JetBrains Mono', monospace" }}
-          >
-            <span className="text-status-root-cause font-semibold">
-              {rootCauseCount}
-            </span>{' '}
-            Root Causes
-          </span>
-        </motion.div>
-
-        <motion.div
-          className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-bg-card border border-border-subtle"
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.3 }}
-        >
-          <Bell className="w-4 h-4 text-accent-cyan" />
-          <span
-            className="text-sm text-text-secondary"
-            style={{ fontFamily: "'JetBrains Mono', monospace" }}
-          >
-            <span className="text-accent-cyan font-semibold">
-              {notificationCount}
-            </span>{' '}
-            Notified
-          </span>
-        </motion.div>
-      </div>
+          Ask the Digital Twin
+        </span>
+      </motion.button>
     </header>
   )
 }

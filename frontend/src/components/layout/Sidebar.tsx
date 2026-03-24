@@ -9,6 +9,7 @@ import {
   Search,
   X,
   Radio,
+  Activity,
 } from 'lucide-react'
 import type { ReactNode } from 'react'
 import type { Component } from '../../types'
@@ -22,6 +23,9 @@ interface SidebarProps {
   onSearchChange: (query: string) => void
   onSearchFocus: (componentId: string) => void
   components: Component[]
+  failureCount: number
+  rootCauseCount: number
+  notificationCount: number
 }
 
 interface StageInfo {
@@ -73,6 +77,9 @@ export function Sidebar({
   onSearchChange,
   onSearchFocus,
   components,
+  failureCount,
+  rootCauseCount,
+  notificationCount,
 }: SidebarProps) {
   const [searchFocused, setSearchFocused] = useState(false)
 
@@ -306,12 +313,51 @@ export function Sidebar({
         </div>
       </motion.div>
 
-      <div className="mt-auto p-4 border-t border-border-subtle">
-        <div className="text-xs text-text-tertiary">
-          <p style={{ fontFamily: "'JetBrains Mono', monospace" }}>
-            Powered by Vadalog
-          </p>
-          <p className="mt-1 text-text-tertiary/60">Prometheux Platform</p>
+      {/* KPIs section */}
+      <div className="p-4 border-t border-border-subtle">
+        <h2
+          className="text-xs font-semibold uppercase tracking-widest text-text-tertiary mb-3"
+          style={{ fontFamily: "'JetBrains Mono', monospace" }}
+        >
+          KPIs
+        </h2>
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-2.5 px-3 py-2 rounded-md bg-bg-card border border-border-subtle">
+            <AlertTriangle className="w-4 h-4 text-status-critical flex-shrink-0" />
+            <span
+              className="text-sm text-text-secondary"
+              style={{ fontFamily: "'JetBrains Mono', monospace" }}
+            >
+              <span className="text-status-critical font-semibold">
+                {failureCount}
+              </span>{' '}
+              Failures
+            </span>
+          </div>
+          <div className="flex items-center gap-2.5 px-3 py-2 rounded-md bg-bg-card border border-border-subtle">
+            <Activity className="w-4 h-4 text-status-root-cause flex-shrink-0" />
+            <span
+              className="text-sm text-text-secondary"
+              style={{ fontFamily: "'JetBrains Mono', monospace" }}
+            >
+              <span className="text-status-root-cause font-semibold">
+                {rootCauseCount}
+              </span>{' '}
+              Root Causes
+            </span>
+          </div>
+          <div className="flex items-center gap-2.5 px-3 py-2 rounded-md bg-bg-card border border-border-subtle">
+            <Bell className="w-4 h-4 text-accent-cyan flex-shrink-0" />
+            <span
+              className="text-sm text-text-secondary"
+              style={{ fontFamily: "'JetBrains Mono', monospace" }}
+            >
+              <span className="text-accent-cyan font-semibold">
+                {notificationCount}
+              </span>{' '}
+              Notified
+            </span>
+          </div>
         </div>
       </div>
     </aside>

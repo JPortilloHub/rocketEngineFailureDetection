@@ -15,6 +15,7 @@ function App() {
   const [selectedSensor, setSelectedSensor] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [_selectedComponent, setSelectedComponent] = useState<string | null>(null)
+  const [chatOpen, setChatOpen] = useState(false)
   const reactFlowInstance = useRef<ReactFlowInstance | null>(null)
 
   const data = useDigitalTwin()
@@ -137,6 +138,7 @@ function App() {
         failureCount={data.failedSensors.length}
         rootCauseCount={data.rootCauses.length}
         notificationCount={data.notifications.length}
+        onOpenChat={() => setChatOpen(true)}
       />
 
       <div className="flex flex-1 overflow-hidden">
@@ -149,6 +151,9 @@ function App() {
           onSearchChange={setSearchQuery}
           onSearchFocus={handleSearchFocus}
           components={data.components}
+          failureCount={data.failedSensors.length}
+          rootCauseCount={data.rootCauses.length}
+          notificationCount={data.notifications.length}
         />
 
         <div className="flex-1 flex flex-col overflow-hidden">
@@ -182,6 +187,8 @@ function App() {
       <ChatPanel
         componentIds={data.components.map((c) => c.ComponentID)}
         onComponentClick={handleChatComponentClick}
+        isOpen={chatOpen}
+        onOpenChange={setChatOpen}
       />
     </div>
   )
