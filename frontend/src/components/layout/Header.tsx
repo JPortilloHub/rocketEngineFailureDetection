@@ -47,7 +47,7 @@ export function Header({
           className="text-sm text-text-secondary group-hover:text-text-primary transition-colors"
           style={{ fontFamily: "'JetBrains Mono', monospace" }}
         >
-          Ask the Digital Twin
+          Ask Prometheux Assistant
         </span>
       </motion.button>
     </header>
