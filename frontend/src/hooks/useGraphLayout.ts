@@ -27,6 +27,7 @@ export interface GraphNodeData {
   isFailed: boolean
   isRootCause: boolean
   hotspotCount: number
+  searchMatch: boolean
   [key: string]: unknown
 }
 
@@ -37,7 +38,9 @@ export function useGraphLayout(
   propagation: FailureChainStep[],
   hotspots: Hotspot[],
   rootCauses: Hotspot[],
-  selectedStage: number | null
+  selectedStage: number | null,
+  selectedSensor: string | null,
+  searchQuery: string
 ) {
   return useMemo(() => {
     if (components.length === 0 || links.length === 0) {
@@ -47,6 +50,36 @@ export function useGraphLayout(
     const failedIds = new Set(failedSensors.map((f) => f.SensorId))
     const rootCauseIds = new Set(rootCauses.map((r) => r.ComponentId))
     const hotspotMap = new Map(hotspots.map((h) => [h.ComponentId, h.Count]))
+
+    // --- Single-chain focus: compute which nodes/edges belong to selected sensor ---
+    const sensorChainNodes = new Set<string>()
+    const sensorChainEdges = new Set<string>()
+    if (selectedSensor && selectedStage === 2) {
+      for (const step of propagation) {
+        if (step.SensorId === selectedSensor) {
+          sensorChainNodes.add(step.From)
+          sensorChainNodes.add(step.To)
+          sensorChainEdges.add(`${step.To}->${step.From}`)
+        }
+      }
+      // Also add the sensor node itself
+      sensorChainNodes.add(selectedSensor)
+    }
+    const isSensorFocused = selectedSensor !== null && selectedStage === 2
+
+    // --- Search matching ---
+    const normalizedSearch = searchQuery.toLowerCase().trim()
+    const hasSearch = normalizedSearch.length > 0
+    const searchMatchIds = new Set<string>()
+    if (hasSearch) {
+      for (const comp of components) {
+        const name = comp.ComponentID.toLowerCase().replace(/_/g, ' ')
+        const id = comp.ComponentID.toLowerCase()
+        if (name.includes(normalizedSearch) || id.includes(normalizedSearch)) {
+          searchMatchIds.add(comp.ComponentID)
+        }
+      }
+    }
 
     // Build adjacency: parent -> children
     const childrenOf = new Map<string, string[]>()
@@ -80,7 +113,6 @@ export function useGraphLayout(
     while (queue.length > 0) {
       const { id, depth } = queue.shift()!
       if (visited.has(id)) {
-        // Keep the minimum depth (closest to root)
         if (depth < (layerMap.get(id) ?? Infinity)) {
           layerMap.set(id, depth)
         }
@@ -131,9 +163,10 @@ export function useGraphLayout(
       }
     } else if (selectedStage === 2) {
       for (const step of propagation) {
+        // If sensor focused, only add that sensor's chain
+        if (isSensorFocused && step.SensorId !== selectedSensor) continue
         activeNodes.add(step.From)
         activeNodes.add(step.To)
-        // Edge goes from parent (To) to child (From) in the graph since parent contains child
         activePropEdges.add(`${step.To}->${step.From}`)
       }
     } else if (selectedStage === 3) {
@@ -165,13 +198,22 @@ export function useGraphLayout(
         const comp = compMap.get(id)
         if (!comp) continue
 
+        // In sensor focus mode, hide nodes not in the chain
+        if (isSensorFocused && !sensorChainNodes.has(id)) {
+          continue
+        }
+
         const isFailed = failedIds.has(id)
         const isRoot = rootCauseIds.has(id)
         const hCount = hotspotMap.get(id) ?? 0
+        const isSearchMatch = hasSearch && searchMatchIds.has(id)
 
-        const isHighlighted =
-          selectedStage === null || activeNodes.has(id)
-        const dimmed = selectedStage !== null && !activeNodes.has(id)
+        let dimmed = false
+        if (hasSearch) {
+          dimmed = !searchMatchIds.has(id)
+        } else if (selectedStage !== null) {
+          dimmed = !activeNodes.has(id)
+        }
 
         nodes.push({
           id,
@@ -190,20 +232,28 @@ export function useGraphLayout(
             hotspotCount: hCount,
             selectedStage,
             dimmed,
-            isHighlighted,
+            isHighlighted: !dimmed,
+            searchMatch: isSearchMatch,
           } satisfies GraphNodeData,
         })
       }
     }
 
     // Create React Flow edges
-    const edges: Edge[] = links.map((link) => {
+    const edges: Edge[] = []
+    for (const link of links) {
       const edgeKey = `${link.Parent}->${link.Component}`
+
+      // In sensor focus mode, hide edges not in the chain
+      if (isSensorFocused && !sensorChainEdges.has(edgeKey)) {
+        continue
+      }
+
       const isActive = activePropEdges.has(edgeKey)
       const sensorId = edgeSensorMap.get(edgeKey)
       const sensorColor = sensorId ? SENSOR_COLORS[sensorId] : undefined
 
-      return {
+      edges.push({
         id: edgeKey,
         source: link.Parent,
         target: link.Component,
@@ -213,12 +263,14 @@ export function useGraphLayout(
           isStage1Active: selectedStage === 1 ? activePropEdges.has(edgeKey) : false,
           sensorColor: sensorColor || '#3B82F6',
           dimmed:
-            selectedStage !== null &&
-            !activePropEdges.has(edgeKey) &&
-            (selectedStage === 1 || selectedStage === 2),
+            hasSearch
+              ? true
+              : selectedStage !== null &&
+                !activePropEdges.has(edgeKey) &&
+                (selectedStage === 1 || selectedStage === 2),
         },
-      }
-    })
+      })
+    }
 
     return { nodes, edges }
   }, [
@@ -229,5 +281,7 @@ export function useGraphLayout(
     hotspots,
     rootCauses,
     selectedStage,
+    selectedSensor,
+    searchQuery,
   ])
 }

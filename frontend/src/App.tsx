@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { Loader2 } from 'lucide-react'
+import { type ReactFlowInstance } from '@xyflow/react'
 import { Header } from './components/layout/Header'
 import { Sidebar } from './components/layout/Sidebar'
 import { BottomPanel } from './components/layout/BottomPanel'
@@ -10,9 +11,10 @@ import { useGraphLayout } from './hooks/useGraphLayout'
 
 function App() {
   const [selectedStage, setSelectedStage] = useState<number | null>(null)
-  const [_selectedComponent, setSelectedComponent] = useState<string | null>(
-    null
-  )
+  const [selectedSensor, setSelectedSensor] = useState<string | null>(null)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [_selectedComponent, setSelectedComponent] = useState<string | null>(null)
+  const reactFlowInstance = useRef<ReactFlowInstance | null>(null)
 
   const data = useDigitalTwin()
 
@@ -23,8 +25,39 @@ function App() {
     data.propagation,
     data.hotspots,
     data.rootCauses,
-    selectedStage
+    selectedStage,
+    selectedSensor,
+    searchQuery
   )
+
+  const handleStageSelect = useCallback((stage: number | null) => {
+    setSelectedStage(stage)
+    // Clear sensor focus when leaving Stage 2
+    if (stage !== 2) {
+      setSelectedSensor(null)
+    }
+  }, [])
+
+  const handleSensorSelect = useCallback((sensorId: string | null) => {
+    setSelectedSensor(sensorId)
+    // Auto-fit after sensor selection
+    setTimeout(() => {
+      reactFlowInstance.current?.fitView({ padding: 0.3, duration: 400 })
+    }, 50)
+  }, [])
+
+  const handleSearchFocus = useCallback((componentId: string) => {
+    setSearchQuery('')
+    reactFlowInstance.current?.fitView({
+      nodes: [{ id: componentId }],
+      padding: 1.5,
+      duration: 500,
+    })
+  }, [])
+
+  const handleReactFlowInit = useCallback((instance: ReactFlowInstance) => {
+    reactFlowInstance.current = instance
+  }, [])
 
   if (data.loading) {
     return (
@@ -73,7 +106,13 @@ function App() {
       <div className="flex flex-1 overflow-hidden">
         <Sidebar
           selectedStage={selectedStage}
-          onSelectStage={setSelectedStage}
+          onSelectStage={handleStageSelect}
+          selectedSensor={selectedSensor}
+          onSelectSensor={handleSensorSelect}
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          onSearchFocus={handleSearchFocus}
+          components={data.components}
         />
 
         <div className="flex-1 flex flex-col overflow-hidden">
@@ -87,6 +126,9 @@ function App() {
               nodes={nodes}
               edges={edges}
               onNodeClick={setSelectedComponent}
+              onInit={handleReactFlowInit}
+              rootCauseIds={data.rootCauses.map((r) => r.ComponentId)}
+              failedSensorIds={data.failedSensors.map((f) => f.SensorId)}
             />
           </motion.div>
 
