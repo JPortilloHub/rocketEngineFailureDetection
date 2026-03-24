@@ -54,7 +54,7 @@ function QuickNavButtons({
   }, [fitView, failedSensorIds])
 
   return (
-    <div className="absolute bottom-3 right-3 z-10 flex flex-col gap-1.5">
+    <div className="absolute bottom-[120px] left-3 z-10 flex flex-col gap-1.5">
       <button
         onClick={handleFitAll}
         className="flex items-center gap-2 px-3 py-1.5 bg-bg-card border border-border-subtle rounded-lg text-xs text-text-secondary hover:bg-bg-elevated hover:text-text-primary transition-all duration-200 shadow-lg"

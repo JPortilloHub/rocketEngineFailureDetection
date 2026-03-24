@@ -48,11 +48,14 @@ function App() {
 
   const handleSearchFocus = useCallback((componentId: string) => {
     setSearchQuery('')
-    reactFlowInstance.current?.fitView({
-      nodes: [{ id: componentId }],
-      padding: 1.5,
-      duration: 500,
-    })
+    // Delay fitView until after React re-renders with undimmed nodes
+    setTimeout(() => {
+      reactFlowInstance.current?.fitView({
+        nodes: [{ id: componentId }],
+        padding: 1.5,
+        duration: 500,
+      })
+    }, 100)
   }, [])
 
   const handleReactFlowInit = useCallback((instance: ReactFlowInstance) => {
