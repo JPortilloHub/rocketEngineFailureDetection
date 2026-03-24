@@ -92,7 +92,7 @@ async def chat(request: ChatRequest):
         ],
         "tools": [
             {
-                "type": "mcp",
+                "type": "mcp_toolset",
                 "server_name": "prometheux",
             }
         ],

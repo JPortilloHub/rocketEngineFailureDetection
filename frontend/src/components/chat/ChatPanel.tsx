@@ -348,7 +348,7 @@ export function ChatPanel({
               className="text-sm font-semibold text-text-primary"
               style={mono}
             >
-              Digital Twin Assistant
+              Prometheux Assistant
             </span>
           </div>
           <div className="flex items-center gap-1">
@@ -473,7 +473,7 @@ function EmptyState({
           <Sparkles className="w-7 h-7 text-accent-blue/60" />
         </div>
         <p className="text-text-secondary text-sm mb-1 font-medium">
-          Ask me about the engine
+          Ask Prometheux Assistant
         </p>
         <p className="text-text-tertiary text-xs mb-6">
           I can query the Prometheux ontology in real time
