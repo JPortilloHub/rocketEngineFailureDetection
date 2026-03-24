@@ -90,6 +90,12 @@ async def chat(request: ChatRequest):
                 "authorization_token": PMTX_TOKEN,
             }
         ],
+        "tools": [
+            {
+                "type": "mcp",
+                "server_name": "prometheux",
+            }
+        ],
         "messages": [{"role": m.role, "content": m.content} for m in request.messages],
     }
 
