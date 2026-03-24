@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback, useRef, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { Loader2 } from 'lucide-react'
 import { type ReactFlowInstance } from '@xyflow/react'
@@ -46,9 +46,27 @@ function App() {
     }, 50)
   }, [])
 
+  // Compute which nodes belong to the currently focused sensor chain
+  const sensorChainNodeIds = useMemo(() => {
+    if (!selectedSensor || selectedStage !== 2) return new Set<string>()
+    const ids = new Set<string>()
+    ids.add(selectedSensor)
+    for (const step of data.propagation) {
+      if (step.SensorId === selectedSensor) {
+        ids.add(step.From)
+        ids.add(step.To)
+      }
+    }
+    return ids
+  }, [selectedSensor, selectedStage, data.propagation])
+
   const handleSearchFocus = useCallback((componentId: string) => {
     setSearchQuery('')
-    // Delay fitView until after React re-renders with undimmed nodes
+    // Only clear sensor focus if the component is NOT in the active chain
+    if (selectedSensor && !sensorChainNodeIds.has(componentId)) {
+      setSelectedSensor(null)
+    }
+    // Delay fitView until after React re-renders with the node visible
     setTimeout(() => {
       reactFlowInstance.current?.fitView({
         nodes: [{ id: componentId }],
@@ -56,7 +74,7 @@ function App() {
         duration: 500,
       })
     }, 100)
-  }, [])
+  }, [selectedSensor, sensorChainNodeIds])
 
   const handleReactFlowInit = useCallback((instance: ReactFlowInstance) => {
     reactFlowInstance.current = instance

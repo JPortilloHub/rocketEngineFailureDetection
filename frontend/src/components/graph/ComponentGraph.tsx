@@ -173,10 +173,12 @@ export function ComponentGraph({
         />
         <MiniMap
           nodeColor={minimapNodeColor}
-          nodeStrokeColor={() => '#1E293B'}
-          nodeStrokeWidth={1}
-          maskColor="rgba(10, 14, 26, 0.8)"
-          className="!bg-bg-card !border-border-subtle !rounded-lg"
+          nodeStrokeColor={() => '#2D3748'}
+          nodeStrokeWidth={2}
+          nodeBorderRadius={4}
+          maskColor="rgba(10, 14, 26, 0.7)"
+          bgColor="#111827"
+          className="!border-border-subtle !rounded-lg"
           style={{ width: 180, height: 120 }}
           pannable
           zoomable

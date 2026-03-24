@@ -222,6 +222,8 @@ export function useGraphLayout(
             x: startX + i * (NODE_WIDTH + HORIZONTAL_GAP),
             y: layerIdx * (NODE_HEIGHT + VERTICAL_GAP),
           },
+          width: NODE_WIDTH,
+          height: NODE_HEIGHT,
           data: {
             label: id.replace(/_/g, ' '),
             status: comp.Status,
