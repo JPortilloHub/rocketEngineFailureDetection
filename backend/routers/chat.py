@@ -93,7 +93,7 @@ async def chat(request: ChatRequest):
         "tools": [
             {
                 "type": "mcp_toolset",
-                "server_name": "prometheux",
+                "mcp_server_name": "prometheux",
             }
         ],
         "messages": [{"role": m.role, "content": m.content} for m in request.messages],
