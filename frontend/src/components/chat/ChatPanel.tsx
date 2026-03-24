@@ -5,6 +5,7 @@ import {
   useCallback,
   type KeyboardEvent,
 } from 'react'
+import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   MessageCircle,
@@ -313,10 +314,10 @@ export function ChatPanel({
 
   // ---- Floating button (hidden mode) ----
   if (mode === 'hidden') {
-    return (
+    return createPortal(
       <motion.button
         onClick={handleOpen}
-        className="fixed right-5 top-1/2 -translate-y-1/2 z-50 w-12 h-12 rounded-full bg-accent-blue flex items-center justify-center shadow-lg shadow-accent-blue/25 hover:shadow-accent-blue/40 hover:scale-110 transition-all duration-200"
+        className="fixed right-5 top-1/2 -translate-y-1/2 z-[9999] w-12 h-12 rounded-full bg-accent-blue flex items-center justify-center shadow-lg shadow-accent-blue/25 hover:shadow-accent-blue/40 hover:scale-110 transition-all duration-200"
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         title="Ask the Digital Twin"
@@ -330,14 +331,15 @@ export function ChatPanel({
             transition={{ duration: 1.5, repeat: Infinity }}
           />
         )}
-      </motion.button>
+      </motion.button>,
+      document.body
     )
   }
 
   // ---- Panel (side or full) ----
   const isFull = mode === 'full'
 
-  return (
+  return createPortal(
     <AnimatePresence>
       <motion.div
         key="chat-panel"
@@ -345,7 +347,7 @@ export function ChatPanel({
         animate={{ x: 0, opacity: 1 }}
         exit={{ x: 400, opacity: 0 }}
         transition={{ duration: 0.3, ease: 'easeOut' }}
-        className={`fixed top-0 right-0 z-50 h-full flex flex-col ${
+        className={`fixed top-0 right-0 z-[9999] h-full flex flex-col ${
           isFull ? 'w-full' : 'w-[400px]'
         }`}
         style={{
@@ -470,7 +472,8 @@ export function ChatPanel({
           </div>
         </div>
       </motion.div>
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   )
 }
 
