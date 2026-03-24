@@ -14,6 +14,7 @@ function ComponentNodeInner({ data }: NodeProps) {
     selectedStage,
     dimmed,
     isObservable,
+    searchMatch,
   } = data as {
     label: string
     status: string
@@ -25,6 +26,7 @@ function ComponentNodeInner({ data }: NodeProps) {
     selectedStage: number | null
     dimmed: boolean
     isHighlighted: boolean
+    searchMatch: boolean
   }
 
   const showHotspot = selectedStage === 3 && hotspotCount > 0
@@ -44,6 +46,11 @@ function ComponentNodeInner({ data }: NodeProps) {
   } else if (status === 'passed') {
     borderColor = 'border-status-healthy'
     statusIcon = <CheckCircle className="w-3.5 h-3.5 text-status-healthy" />
+  }
+
+  if (searchMatch) {
+    borderColor = 'border-accent-cyan'
+    glowClass = 'shadow-[0_0_15px_rgba(6,182,212,0.4)]'
   }
 
   return (
