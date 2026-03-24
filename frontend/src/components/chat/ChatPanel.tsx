@@ -8,7 +8,6 @@ import {
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  MessageCircle,
   X,
   Minus,
   Maximize2,
@@ -27,13 +26,15 @@ interface ChatMessage {
   content: string
 }
 
-type PanelMode = 'hidden' | 'side' | 'full'
-
 interface ChatPanelProps {
   /** All known component IDs so we can make them clickable */
   componentIds: string[]
   /** Called when user clicks a component name inside a chat message */
   onComponentClick: (componentId: string) => void
+  /** Controlled open state from parent */
+  isOpen: boolean
+  /** Callback when open state changes */
+  onOpenChange: (open: boolean) => void
 }
 
 // ---------------------------------------------------------------------------
@@ -227,12 +228,13 @@ function TypingIndicator() {
 export function ChatPanel({
   componentIds,
   onComponentClick,
+  isOpen,
+  onOpenChange,
 }: ChatPanelProps) {
-  const [mode, setMode] = useState<PanelMode>('hidden')
+  const [mode, setMode] = useState<'side' | 'full'>('side')
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
-  const [hasBeenOpened, setHasBeenOpened] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
 
@@ -243,10 +245,10 @@ export function ChatPanel({
 
   // Focus input when panel opens
   useEffect(() => {
-    if (mode !== 'hidden') {
+    if (isOpen) {
       setTimeout(() => inputRef.current?.focus(), 300)
     }
-  }, [mode])
+  }, [isOpen])
 
   const sendMessage = useCallback(
     async (content: string) => {
@@ -298,11 +300,6 @@ export function ChatPanel({
     }
   }
 
-  const handleOpen = () => {
-    setMode('side')
-    setHasBeenOpened(true)
-  }
-
   const handleComponentClickInChat = (componentId: string) => {
     if (mode === 'full') {
       setMode('side')
@@ -312,29 +309,8 @@ export function ChatPanel({
     }
   }
 
-  // ---- Floating button (hidden mode) ----
-  if (mode === 'hidden') {
-    return createPortal(
-      <motion.button
-        onClick={handleOpen}
-        className="fixed right-5 top-1/2 -translate-y-1/2 z-[9999] w-12 h-12 rounded-full bg-accent-blue flex items-center justify-center shadow-lg shadow-accent-blue/25 hover:shadow-accent-blue/40 hover:scale-110 transition-all duration-200"
-        initial={{ opacity: 0, x: 20 }}
-        animate={{ opacity: 1, x: 0 }}
-        title="Ask the Digital Twin"
-      >
-        <MessageCircle className="w-5 h-5 text-white" />
-        {/* Pulse ring on first load */}
-        {!hasBeenOpened && (
-          <motion.div
-            className="absolute inset-0 rounded-full border-2 border-accent-blue"
-            animate={{ scale: [1, 1.6], opacity: [0.6, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-          />
-        )}
-      </motion.button>,
-      document.body
-    )
-  }
+  // ---- Hidden: render nothing ----
+  if (!isOpen) return null
 
   // ---- Panel (side or full) ----
   const isFull = mode === 'full'
@@ -394,14 +370,14 @@ export function ChatPanel({
               </button>
             )}
             <button
-              onClick={() => setMode('hidden')}
+              onClick={() => onOpenChange(false)}
               className="p-1.5 rounded-md text-text-tertiary hover:text-text-primary hover:bg-bg-elevated transition-colors"
               title="Minimize"
             >
               <Minus className="w-4 h-4" />
             </button>
             <button
-              onClick={() => setMode('hidden')}
+              onClick={() => onOpenChange(false)}
               className="p-1.5 rounded-md text-text-tertiary hover:text-text-primary hover:bg-bg-elevated transition-colors"
               title="Close"
             >
