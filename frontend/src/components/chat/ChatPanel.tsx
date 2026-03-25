@@ -14,6 +14,7 @@ import {
   Minimize2,
   Send,
   Sparkles,
+  MessageCircle,
 } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 
@@ -309,8 +310,23 @@ export function ChatPanel({
     }
   }
 
-  // ---- Hidden: render nothing ----
-  if (!isOpen) return null
+  // ---- Floating icon when closed ----
+  if (!isOpen) {
+    return createPortal(
+      <motion.button
+        onClick={() => onOpenChange(true)}
+        className="floating-chat-btn fixed bottom-6 right-6 z-[9999] w-14 h-14 rounded-full bg-accent-blue flex items-center justify-center text-white transition-all duration-200"
+        initial={{ scale: 0, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0, opacity: 0 }}
+        whileHover={{ scale: 1.08 }}
+        title="Ask the Digital Twin"
+      >
+        <MessageCircle className="w-6 h-6" />
+      </motion.button>,
+      document.body
+    )
+  }
 
   // ---- Panel (side or full) ----
   const isFull = mode === 'full'
@@ -323,128 +339,160 @@ export function ChatPanel({
         animate={{ x: 0, opacity: 1 }}
         exit={{ x: 400, opacity: 0 }}
         transition={{ duration: 0.3, ease: 'easeOut' }}
-        className={`fixed top-0 right-0 z-[9999] h-full flex flex-col ${
+        className={`fixed top-0 right-0 z-[9999] h-full flex ${
           isFull ? 'w-full' : 'w-[400px]'
         }`}
         style={{
           backgroundColor: isFull ? 'var(--color-bg-primary)' : undefined,
         }}
       >
-        {/* Backdrop blur strip for side panel mode */}
+        {/* Animated gradient border line (side mode only) */}
         {!isFull && (
-          <div
-            className="absolute inset-0 bg-bg-primary/95 backdrop-blur-sm border-l border-border-subtle"
-            style={{ zIndex: -1 }}
-          />
+          <div className="chat-border-line shrink-0" />
         )}
 
-        {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-border-subtle bg-bg-secondary/80 backdrop-blur-sm shrink-0">
-          <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-md bg-accent-blue/15 flex items-center justify-center">
-              <Sparkles className="w-4 h-4 text-accent-blue" />
-            </div>
-            <span
-              className="text-sm font-semibold text-text-primary"
-              style={mono}
-            >
-              Prometheux Assistant
-            </span>
-          </div>
-          <div className="flex items-center gap-1">
-            {isFull ? (
-              <button
-                onClick={() => setMode('side')}
-                className="p-1.5 rounded-md text-text-tertiary hover:text-text-primary hover:bg-bg-elevated transition-colors"
-                title="Collapse to side panel"
-              >
-                <Minimize2 className="w-4 h-4" />
-              </button>
-            ) : (
-              <button
-                onClick={() => setMode('full')}
-                className="p-1.5 rounded-md text-text-tertiary hover:text-text-primary hover:bg-bg-elevated transition-colors"
-                title="Expand to full screen"
-              >
-                <Maximize2 className="w-4 h-4" />
-              </button>
-            )}
-            <button
-              onClick={() => onOpenChange(false)}
-              className="p-1.5 rounded-md text-text-tertiary hover:text-text-primary hover:bg-bg-elevated transition-colors"
-              title="Minimize"
-            >
-              <Minus className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => onOpenChange(false)}
-              className="p-1.5 rounded-md text-text-tertiary hover:text-text-primary hover:bg-bg-elevated transition-colors"
-              title="Close"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-
-        {/* Messages area */}
-        <div className="flex-1 overflow-y-auto p-4">
-          {messages.length === 0 && !loading ? (
-            <EmptyState onSuggestionClick={sendMessage} />
-          ) : (
-            <div className={`flex flex-col gap-3 ${isFull ? 'max-w-3xl mx-auto' : ''}`}>
-              {messages.map((msg, idx) => (
-                <motion.div
-                  key={idx}
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.2 }}
-                  className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
-                >
-                  <div
-                    className={`max-w-[85%] rounded-xl px-3.5 py-2.5 text-sm leading-relaxed ${
-                      msg.role === 'user'
-                        ? 'bg-accent-blue text-white rounded-br-sm'
-                        : 'bg-bg-card border border-border-subtle text-text-secondary rounded-bl-sm'
-                    }`}
-                  >
-                    {msg.role === 'assistant' ? (
-                      <LinkedMessage
-                        content={msg.content}
-                        componentIds={componentIds}
-                        onComponentClick={handleComponentClickInChat}
-                      />
-                    ) : (
-                      <span>{msg.content}</span>
-                    )}
-                  </div>
-                </motion.div>
-              ))}
-              {loading && <TypingIndicator />}
-              <div ref={messagesEndRef} />
-            </div>
-          )}
-        </div>
-
-        {/* Input bar */}
-        <div className="shrink-0 border-t border-border-subtle bg-bg-secondary/80 backdrop-blur-sm p-3">
-          <div className={`flex gap-2 ${isFull ? 'max-w-3xl mx-auto' : ''}`}>
-            <textarea
-              ref={inputRef}
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Ask about the engine..."
-              rows={1}
-              className="flex-1 bg-bg-card border border-border-subtle rounded-lg px-3 py-2.5 text-sm text-text-primary placeholder:text-text-tertiary outline-none resize-none focus:border-accent-blue/50 transition-colors"
-              style={mono}
+        {/* Panel content column */}
+        <div className="flex-1 flex flex-col min-w-0">
+          {/* Backdrop blur layer for side panel mode */}
+          {!isFull && (
+            <div
+              className="absolute inset-0 backdrop-blur-md"
+              style={{ backgroundColor: 'rgba(10, 14, 26, 0.88)', zIndex: -1 }}
             />
-            <button
-              onClick={() => sendMessage(input)}
-              disabled={!input.trim() || loading}
-              className="px-3 py-2.5 bg-accent-blue rounded-lg text-white hover:bg-accent-blue/80 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200 shrink-0"
-            >
-              <Send className="w-4 h-4" />
-            </button>
+          )}
+
+          {/* Header */}
+          <div className="flex items-center justify-between px-4 py-3 border-b border-border-subtle shrink-0"
+            style={{ backgroundColor: 'rgba(17, 24, 39, 0.7)', backdropFilter: 'blur(8px)' }}
+          >
+            <div className="flex items-center gap-2.5">
+              <div className="w-7 h-7 rounded-md bg-accent-blue/15 flex items-center justify-center">
+                <Sparkles className="w-4 h-4 text-accent-blue" />
+              </div>
+              <span
+                className="text-sm font-semibold text-text-primary"
+                style={mono}
+              >
+                Prometheux Assistant
+              </span>
+              {/* Live connection pulse dot */}
+              <div className="relative w-2 h-2">
+                <div className="absolute inset-0 rounded-full bg-status-healthy" />
+                <div className="chat-pulse-dot absolute inset-0 rounded-full bg-status-healthy" />
+              </div>
+            </div>
+            <div className="flex items-center gap-1">
+              {isFull ? (
+                <button
+                  onClick={() => setMode('side')}
+                  className="p-1.5 rounded-md text-text-tertiary hover:text-text-primary hover:bg-bg-elevated transition-colors"
+                  title="Collapse to side panel"
+                >
+                  <Minimize2 className="w-4 h-4" />
+                </button>
+              ) : (
+                <button
+                  onClick={() => setMode('full')}
+                  className="p-1.5 rounded-md text-text-tertiary hover:text-text-primary hover:bg-bg-elevated transition-colors"
+                  title="Expand to full screen"
+                >
+                  <Maximize2 className="w-4 h-4" />
+                </button>
+              )}
+              <button
+                onClick={() => onOpenChange(false)}
+                className="p-1.5 rounded-md text-text-tertiary hover:text-text-primary hover:bg-bg-elevated transition-colors"
+                title="Minimize"
+              >
+                <Minus className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => onOpenChange(false)}
+                className="p-1.5 rounded-md text-text-tertiary hover:text-text-primary hover:bg-bg-elevated transition-colors"
+                title="Close"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          {/* Messages area */}
+          <div className="flex-1 overflow-y-auto p-4">
+            {messages.length === 0 && !loading ? (
+              <EmptyState onSuggestionClick={sendMessage} />
+            ) : (
+              <div className={`flex flex-col gap-3 ${isFull ? 'max-w-3xl mx-auto' : ''}`}>
+                {messages.map((msg, idx) => (
+                  <motion.div
+                    key={idx}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                  >
+                    <div
+                      className={`max-w-[85%] rounded-xl px-3.5 py-2.5 text-sm leading-relaxed ${
+                        msg.role === 'user'
+                          ? 'bg-accent-blue text-white rounded-br-sm'
+                          : 'bg-bg-card border border-border-subtle text-text-secondary rounded-bl-sm'
+                      }`}
+                    >
+                      {msg.role === 'assistant' ? (
+                        <LinkedMessage
+                          content={msg.content}
+                          componentIds={componentIds}
+                          onComponentClick={handleComponentClickInChat}
+                        />
+                      ) : (
+                        <span>{msg.content}</span>
+                      )}
+                    </div>
+                  </motion.div>
+                ))}
+                {loading && <TypingIndicator />}
+                <div ref={messagesEndRef} />
+              </div>
+            )}
+          </div>
+
+          {/* Input bar */}
+          <div className="shrink-0 border-t border-border-subtle p-3"
+            style={{ backgroundColor: 'rgba(17, 24, 39, 0.7)', backdropFilter: 'blur(8px)' }}
+          >
+            <div className={`flex gap-2 ${isFull ? 'max-w-3xl mx-auto' : ''}`}>
+              <textarea
+                ref={inputRef}
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Ask about the engine..."
+                rows={1}
+                className="flex-1 rounded-lg px-3 py-2.5 text-sm text-text-primary placeholder:text-text-tertiary outline-none resize-none border border-border-subtle focus:border-accent-blue/50 transition-colors"
+                style={{
+                  ...mono,
+                  backgroundColor: 'rgba(26, 31, 53, 0.6)',
+                  backdropFilter: 'blur(8px)',
+                }}
+              />
+              <button
+                onClick={() => sendMessage(input)}
+                disabled={!input.trim() || loading}
+                className="px-3 py-2.5 bg-accent-blue rounded-lg text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200 shrink-0"
+                style={{
+                  boxShadow: input.trim() && !loading ? '0 0 12px rgba(59, 130, 246, 0)' : 'none',
+                }}
+                onMouseEnter={(e) => {
+                  if (input.trim() && !loading) {
+                    e.currentTarget.style.boxShadow = '0 0 12px rgba(59, 130, 246, 0.4)'
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.boxShadow = 'none'
+                }}
+              >
+                <Send className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         </div>
       </motion.div>
@@ -483,7 +531,7 @@ function EmptyState({
             <button
               key={suggestion}
               onClick={() => onSuggestionClick(suggestion)}
-              className="text-left px-3 py-2 rounded-lg bg-bg-card border border-border-subtle text-xs text-text-secondary hover:bg-bg-elevated hover:text-text-primary hover:border-accent-blue/30 transition-all duration-200"
+              className="suggestion-chip text-left px-3 py-2 rounded-lg text-xs text-text-secondary hover:text-text-primary transition-all duration-200"
               style={mono}
             >
               {suggestion}

@@ -56,6 +56,84 @@ body {
   border-radius: 8px !important;
 }
 
+/* Chat panel animated border gradient */
+@keyframes chatBorderGradient {
+  0%, 100% { background-position: 0% 0%; }
+  50% { background-position: 0% 100%; }
+}
+
+@keyframes pulseDot {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.6); opacity: 0; }
+}
+
+@keyframes floatingGlow {
+  0% { box-shadow: 0 0 12px rgba(59, 130, 246, 0.3); }
+  50% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.5); }
+  100% { box-shadow: 0 0 12px rgba(59, 130, 246, 0.3); }
+}
+
+.chat-border-line {
+  width: 2px;
+  background: linear-gradient(180deg, var(--color-accent-blue), var(--color-accent-cyan), var(--color-accent-blue));
+  background-size: 100% 200%;
+  animation: chatBorderGradient 4s ease infinite;
+}
+
+.chat-pulse-dot {
+  position: relative;
+}
+
+.chat-pulse-dot::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--color-status-healthy);
+  animation: pulseDot 2s ease-in-out infinite;
+}
+
+.suggestion-chip {
+  position: relative;
+  background: rgba(26, 31, 53, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid transparent;
+  background-clip: padding-box;
+}
+
+.suggestion-chip::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 0.5rem;
+  padding: 1px;
+  background: linear-gradient(135deg, var(--color-accent-blue), var(--color-accent-cyan));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.4;
+  transition: opacity 200ms ease;
+}
+
+.suggestion-chip:hover::before {
+  opacity: 0.8;
+}
+
+.suggestion-chip:hover {
+  box-shadow: 0 0 16px rgba(59, 130, 246, 0.15);
+  transform: scale(1.02);
+}
+
+.floating-chat-btn {
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.3);
+  animation: floatingGlow 1.5s ease-in-out 3;
+}
+
+.floating-chat-btn:hover {
+  box-shadow: 0 0 24px rgba(59, 130, 246, 0.5) !important;
+}
+
 /* Scrollbar styling */
 ::-webkit-scrollbar {
   width: 6px;
