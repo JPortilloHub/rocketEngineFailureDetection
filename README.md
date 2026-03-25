@@ -1,4 +1,4 @@
-# Prometheux Digital Twin — SSME Failure Detection Dashboard
+# SSME Failure Detection System Dashboard
 
 A production-grade frontend dashboard for visualizing rocket engine (SSME) failure detection and response, built on top of the Prometheux ontology-native data processing platform.
 

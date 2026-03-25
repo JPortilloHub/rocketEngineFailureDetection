@@ -110,7 +110,7 @@ function App() {
             className="text-text-secondary text-sm"
             style={{ fontFamily: "'JetBrains Mono', monospace" }}
           >
-            Initializing Digital Twin...
+            Initializing SSME Failure Detection System Dashboard...
           </p>
         </motion.div>
       </div>
@@ -138,7 +138,8 @@ function App() {
         failureCount={data.failedSensors.length}
         rootCauseCount={data.rootCauses.length}
         notificationCount={data.notifications.length}
-        onOpenChat={() => setChatOpen(true)}
+
+
       />
 
       <div className="flex flex-1 overflow-hidden">
